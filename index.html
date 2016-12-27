@@ -1,12 +1,170 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">        
-        <title>Bunny Hop</title>
-    </head>
-    <body>
+<html lang="en">
 
+<head>
+    <meta charset="utf-8">
+    <title>Bunny Hop</title>
+    <script src="lib/easeljs-0.8.2.min.js"></script>
+    <script src="lib/preloadjs-NEXT.min.js"></script>
+    <link rel="stylesheet" href="css/bunnyhop.css">
+    <!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+    <script id="editable">
+        var stage, w, h, loader, score, hscore;
+        var sky, grant, ground, hill, hill2, carrot, rock, hs = 0
+            , count = 0
+            , groundSpeed = 450
+            , hillSpeed = 45
+            , hill2Speed = 30;
 
-    </body>
+        function init() {
+            //            examples.showDistractor();
+            stage = new createjs.Stage("gameCanvas");
+            // grab canvas width and height for later calculations:
+            w = stage.canvas.width;
+            h = stage.canvas.height;
+            manifest = [
+                {
+                    src: "bunnysprite8.png"
+                    , id: "grant"
+                }
+                , {
+                    src: "sky.png"
+                    , id: "sky"
+                }
+                , {
+                    src: "ground.png"
+                    , id: "ground"
+                }
+                , {
+                    src: "hill1.png"
+                    , id: "hill"
+                }
+                , {
+                    src: "hill2.png"
+                    , id: "hill2"
+                }
+                , {
+                    src: "rock.png"
+                    , id: "rock"
+                }, {
+                    src: "carrot.png"
+                    , id: "carrot"
+                }
+		];
+            loader = new createjs.LoadQueue(false);
+            loader.addEventListener("complete", handleComplete);
+            loader.loadManifest(manifest, true, "images/");
+        }
+
+        function handleComplete() {
+            //            examples.hideDistractor();
+            sky = new createjs.Shape();
+            sky.graphics.beginBitmapFill(loader.getResult("sky")).drawRect(0, 0, w, h);
+            var groundImg = loader.getResult("ground");
+            ground = new createjs.Shape();
+            ground.graphics.beginBitmapFill(groundImg).drawRect(0, 0, w + groundImg.width, groundImg.height);
+            ground.tileW = groundImg.width;
+            ground.y = h - groundImg.height;
+            //add backgrounds
+            hill = new createjs.Bitmap(loader.getResult("hill"));
+            hill.setTransform(Math.random() * w, h - hill.image.height * 4 - groundImg.height, 4, 4);
+            hill.alpha = 0.5;
+            hill2 = new createjs.Bitmap(loader.getResult("hill2"));
+            hill2.setTransform(Math.random() * w, h - hill2.image.height * 3 - groundImg.height, 3, 3);
+            //add carrots and rocks
+            carrot = new createjs.Bitmap(loader.getResult("carrot"));
+            carrot.setTransform(Math.random() * w, 80, 3, 3);
+            carrot.scaleX = carrot.scaleY = 0.5;
+            rock = new createjs.Bitmap(loader.getResult("rock"));
+            rock.setTransform(Math.random() * w, 290, 3, 3);
+            rock.scaleX = rock.scaleY = 0.5;
+            //add bunny
+            var spriteSheet = new createjs.SpriteSheet({
+                framerate: 10
+                , "images": [loader.getResult("grant")]
+                , "frames": {
+                    "regX": 82
+                    , "height": 370
+                    , "count": 8
+                    , "regY": 0
+                    , "width": 307
+                }, // define two animations, run (loops, 1.5x speed) and jump (returns to run):
+                "animations": {
+                    "run": [0, 1, "run", 1]
+                    , "jump": [2, 7, "run"]
+                }
+            });
+            grant = new createjs.Sprite(spriteSheet, "run");
+            grant.x = 100;
+            grant.y = -20;
+            //add highest score
+            hscore = new createjs.Text("HS: 0", "20px Arial", "#3c3c3c");
+            hscore.x = w - 230;
+            hscore.y = 0;
+            hscore.outline = true;
+            //add score text
+            score = new createjs.Text("Score: 0", "20px Arial", "blue");
+            score.x = w - 150;
+            score.y = 0;
+            score.outline = true;
+            stage.addChild(sky, hill, hill2, ground, grant, carrot, rock, hscore, score);
+            stage.addEventListener("stagemousedown", handleJumpStart);
+            createjs.Ticker.timingMode = createjs.Ticker.RAF;
+            //            createjs.Ticker.setFPS(1);
+            createjs.Ticker.addEventListener("tick", tick);
+            console.log(score);
+        }
+
+        function handleJumpStart() {
+            grant.gotoAndPlay("jump");
+        }
+
+        function tick(event) {
+            count++;
+            var deltaS = event.delta / 1000;
+            var position = grant.x + 150 * deltaS;
+            var grantW = grant.getBounds().width * grant.scaleX;
+            //            grant.x = (position >= w + grantW) ? -grantW : position;
+            //move the ground
+            ground.x = (ground.x - deltaS * groundSpeed) % ground.tileW;
+            //move carrots and rocks
+            carrot.x = (carrot.x - deltaS * groundSpeed);
+            if (carrot.x + carrot.image.width * carrot.scaleX <= 0) {
+                carrot.x = w;
+            }
+            rock.x = (rock.x - deltaS * groundSpeed);
+            if (rock.x + rock.image.width * rock.scaleX <= 0) {
+                rock.x = w;
+            }
+            //move hills
+            hill.x = (hill.x - deltaS * hillSpeed);
+            if (hill.x + hill.image.width * hill.scaleX <= 0) {
+                hill.x = w;
+            }
+            hill2.x = (hill2.x - deltaS * hill2Speed);
+            if (hill2.x + hill2.image.width * hill2.scaleX <= 0) {
+                hill2.x = w;
+            }
+            //update the score
+            if (count % 10 == 0) {
+                score.text = "Score:  " + count / 5;
+            }
+            stage.update(event);
+        }
+
+        function updateHS() {
+            hscore.text = "HS: " + hs;
+        }
+    </script>
+</head>
+
+<body onload="init();">
+    <div id="page-body">
+        <h1>Bunny Hop</h1>
+        <p>Click to play!</p>
+        <canvas id="gameCanvas" width="900" height="400"></canvas>
+    </div>
+</body>
 
 </html>
