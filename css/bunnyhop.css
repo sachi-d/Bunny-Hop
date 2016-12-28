@@ -1,18 +1,53 @@
+@font-face {
+    font-family: rickles;
+    src: url('../fonts/Rickles.ttf');
+}
+
+@font-face {
+    font-family: madison;
+    src: url('../fonts/madison.ttf');
+}
+
 #page-body {
     width: 1000px;
     margin: auto;
-    padding: 10px;
     border-radius: 5px;
     border: 1px solid black;
     text-align: center;
 }
 
-h1,
+#space-btn {
+    border-radius: 3px;
+    border: 1px dashed #999;
+    padding: 3px;
+}
+
+.header {
+    width: 40%;
+    float: left;
+    height: auto;
+}
+
+h1 {
+    font-family: rickles;
+    color: #f60;
+    text-shadow: 2px 2px #9c3;
+    font-size: 3.5em;
+}
+
+.description {
+    width: 60%;
+    float: right;
+}
+
 p {
-    font-family: cursive;
+    font-family: madison;
+    color: #444;
+    font-size: 2em;
+    font-weight: bold;
 }
 
 #gameCanvas {
-    margin: auto;
+    margin-bottom: 20px;
     border: 2px solid black;
 }
