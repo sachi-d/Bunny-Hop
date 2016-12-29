@@ -120,7 +120,8 @@
             score.y = 0;
             score.outline = true;
             stage.addChild(sky, cloud, hill, hill2, ground, grant, carrot, rock, hscore, score);
-            stage.addEventListener("stagemousedown", spaceClicked);
+            //            stage.addEventListener("stagemousedown", spaceClicked);
+            this.document.onkeydown = spaceClicked;
             createjs.Ticker.timingMode = createjs.Ticker.RAF;
             createjs.Ticker.addEventListener("tick", tick);
         }
