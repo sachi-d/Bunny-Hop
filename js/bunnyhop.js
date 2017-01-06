@@ -1,6 +1,7 @@
   var stage, w, h, loader, score, hscore;
-  var sky, bunny, ground, hill, hill2, carrot, rock, cloud, hs = 0
+  var sky, bunny, ground, hill, hill2, carrot, points, rock, cloud, hs = 0
       , count = 0
+      , lastScore = 0
       , groundSpeed = 450
       , hillSpeed = 30
       , hill2Speed = 45
@@ -45,6 +46,9 @@
                 }, {
               src: "cloud.png"
               , id: "cloud"
+                }, {
+              src: "plusPoints.png"
+              , id: "plusPoints"
                 }
 		];
       loader = new createjs.LoadQueue(false);
@@ -74,6 +78,9 @@
       //add carrots and rocks
       carrot = new createjs.Bitmap(loader.getResult("carrot"));
       carrot.setTransform(550, 60, 0.5, 0.5);
+      points = new createjs.Bitmap(loader.getResult("plusPoints"));
+      points.setTransform(560, 40, 0.3, 0.3);
+      points.alpha = 0;
       rock = new createjs.Bitmap(loader.getResult("rock"));
       rock.setTransform(800, 270, 0.5, 0.5);
       //add bunny
@@ -107,7 +114,7 @@
       score.x = w - 150;
       score.y = 0;
       score.outline = true;
-      stage.addChild(sky, cloud, hill, hill2, ground, bunny, carrot, rock, hscore, score);
+      stage.addChild(sky, cloud, hill, hill2, ground, bunny, carrot, points, rock, hscore, score);
       this.document.onkeydown = spaceClicked;
       createjs.Ticker.timingMode = createjs.Ticker.RAF;
       createjs.Ticker.addEventListener("tick", tick);
@@ -129,7 +136,8 @@
       //move carrots and rocks
       carrot.x = (carrot.x - deltaS * groundSpeed);
       if (carrot.x + carrot.image.width * carrot.scaleX <= 0) {
-          carrot.x = w + Math.random() * 1000;
+          var carrotX = w + Math.random() * 1000;
+          carrot.x = carrotX;
       }
       rock.x = (rock.x - deltaS * groundSpeed);
       if (rock.x + rock.image.width * rock.scaleX <= 0) {
@@ -152,20 +160,23 @@
           cloud.scaleX = cloud.scaleY = (ran * 0.5) + 3;
           cloud.y = ran * 60;
       }
+      //handle opacity of points
+      if (points.alpha > 0) {
+          points.alpha -= 0.03;
+      }
       //update the score
       if (count % 10 == 0) {
-          score.text = "Score:  " + count / 5;
+          score.text = "Score:  " + Math.round(count / 50);
       }
       //hit carrot
       var pt = carrot.localToLocal(70, 60, bunny);
       if (bunny.hitTest(pt.x, pt.y)) {
-          console.log(count);
+          handleCarrotHit();
       }
       //hit rock
       pt = rock.localToLocal(50, 50, bunny);
       if (bunny.hitTest(pt.x, pt.y)) {
-          gameOn = false;
-          handleBunnyHit();
+          handleRockHit();
       }
       stage.update(event);
   }
@@ -186,12 +197,17 @@
       hscore.text = "HS: " + hs;
   }
 
-  function handleBunnyHit() {
-      //      bunny.stop();
+  function handleRockHit() {
+      gameOn = false;
       bunny.gotoAndStop("hit");
-      //      bunny.spriteSheet = null;
-      //      var hitBunny = new createjs.Bitmap(icon);
-      //      hitBunny.x = bunny.x;
-      //      hitBunny.y = bunny.y;
-      //      bunny = hitBunny;
+  }
+
+  function handleCarrotHit() {
+      if (count - lastScore > 100) {
+          count += 1000;
+          lastScore = count;
+          points.x = carrot.x;
+          points.alpha = 1;
+          console.log("ddd");
+      }
   }
