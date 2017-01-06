@@ -16,6 +16,18 @@
       // grab canvas width and height for later calculations:
       w = stage.canvas.width;
       h = stage.canvas.height;
+      var sounds = [
+          {
+              src: "jump.mp3"
+              , id: "jump"
+          }, {
+              src: "carrot-tink.mp3"
+              , id: "point"
+          }, {
+              src: "rock.mp3"
+              , id: "hit"
+          }
+       ];
       manifest = [
           {
               src: "bunnyspriteHit.png"
@@ -52,6 +64,7 @@
                 }
 		];
       loader = new createjs.LoadQueue(false);
+      createjs.Sound.registerSounds(sounds, "sounds/");
       loader.addEventListener("complete", handleComplete);
       loader.loadManifest(manifest, true, "images/");
   }
@@ -121,12 +134,12 @@
   }
 
   function startNewGame() {
-      console.log("ddddddd");
       bunny.gotoAndStop("run");
       gameOn = false, isHit = false, carrot.x += 300, rock.x += 700, count = 0, lastScore = 0, points.alpha = 0, points.x = carrot.x, score.text = "Score: 0";
   }
 
   function handleJumpStart() {
+      createjs.Sound.play("jump");
       bunny.gotoAndPlay("jump");
   }
 
@@ -216,6 +229,7 @@
   }
 
   function handleRockHit() {
+      createjs.Sound.play("hit");
       gameOn = false;
       isHit = true;
       bunny.gotoAndStop("hit");
@@ -224,6 +238,7 @@
 
   function handleCarrotHit() {
       if (count - lastScore > 100) {
+          createjs.Sound.play("point");
           count += 1000;
           lastScore = count;
           points.x = carrot.x;
