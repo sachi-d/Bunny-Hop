@@ -1,5 +1,6 @@
   var stage, w, h, loader, score, hscore;
-  var sky, bunny, ground, hill, hill2, carrot, points, rock, cloud, hs = 0
+  var sky, bunny, ground, hill, hill2, carrot, points, rock, cloud, hscoreText = 0
+      , scoreText = 0
       , count = 0
       , lastScore = 0
       , groundSpeed = 450
@@ -104,13 +105,13 @@
       bunny.scaleX = 0.8;
       bunny.scaleY = 0.8;
       //add highest score
-      hscore = new createjs.Text("HS: 0", "20px Arial", "#3c3c3c");
+      hscore = new createjs.Text("HS: 0", "20px Arial", "#090");
       hscore.x = w - 230;
       hscore.y = 10;
       hscore.outline = true;
       //add score text
-      score = new createjs.Text("Score: 0", "20px Arial", "blue");
-      score.x = w - 150;
+      score = new createjs.Text("Score: 0", "20px Arial", "#00b");
+      score.x = w - 120;
       score.y = 10;
       score.outline = true;
       stage.addChild(sky, cloud, hill, hill2, ground, bunny, carrot, points, rock, hscore, score);
@@ -171,7 +172,8 @@
       }
       //update the score
       if (count % 10 == 0) {
-          score.text = "Score:  " + Math.round(count / 50);
+          scoreText = Math.round(count / 50);
+          score.text = "Score:  " + scoreText;
       }
       //hit carrot
       var pt = carrot.localToLocal(70, 60, bunny);
@@ -207,13 +209,17 @@
   }
 
   function updateHS() {
-      hscore.text = "HS: " + hs;
+      if (hscoreText < scoreText) {
+          hscoreText = scoreText;
+          hscore.text = "HS: " + hscoreText;
+      }
   }
 
   function handleRockHit() {
       gameOn = false;
       isHit = true;
       bunny.gotoAndStop("hit");
+      updateHS();
   }
 
   function handleCarrotHit() {
