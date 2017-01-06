@@ -128,7 +128,7 @@
       score.y = 10;
       score.outline = true;
       stage.addChild(sky, cloud, hill, hill2, ground, bunny, carrot, points, rock, hscore, score);
-      this.document.onkeydown = spaceClicked;
+      stage.addEventListener("stagemousedown", trigFunc);
       createjs.Ticker.timingMode = createjs.Ticker.RAF;
       createjs.Ticker.addEventListener("tick", tick);
   }
@@ -201,10 +201,7 @@
       stage.update(event);
   }
 
-  function spaceClicked(event) {
-      if (event.keyCode !== 32) {
-          return;
-      }
+  function trigFunc(event) {
       if (gameOn) {
           //          else {
           handleJumpStart();

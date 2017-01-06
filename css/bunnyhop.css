@@ -51,3 +51,11 @@ p {
     margin-bottom: 20px;
     border: 2px solid black;
 }
+
+#fork-me {
+    background-color: #34B521;
+    color: #fff;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
