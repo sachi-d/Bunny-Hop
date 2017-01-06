@@ -1,11 +1,13 @@
   var stage, w, h, loader, score, hscore;
-  var sky, grant, ground, hill, hill2, carrot, rock, cloud, hs = 0
+  var sky, bunny, ground, hill, hill2, carrot, rock, cloud, hs = 0
       , count = 0
       , groundSpeed = 450
       , hillSpeed = 30
       , hill2Speed = 45
       , cloudSpeed = 15
       , gameOn = false;
+  var rockMin = 500
+      , rockMax = 0;
 
   function init() {
       //            examples.showDistractor();
@@ -15,8 +17,8 @@
       h = stage.canvas.height;
       manifest = [
           {
-              src: "bunnysprite10.png"
-              , id: "grant"
+              src: "bunnyspriteHit.png"
+              , id: "bunny"
                 }
                 , {
               src: "sky.png"
@@ -71,32 +73,30 @@
       cloud.alpha = 0.7;
       //add carrots and rocks
       carrot = new createjs.Bitmap(loader.getResult("carrot"));
-      carrot.setTransform(550, 60, 3, 3);
-      carrot.scaleX = carrot.scaleY = 0.5;
+      carrot.setTransform(550, 60, 0.5, 0.5);
       rock = new createjs.Bitmap(loader.getResult("rock"));
-      rock.setTransform(800, 270, 3, 3);
-      rock.scaleX = rock.scaleY = 0.5;
+      rock.setTransform(800, 270, 0.5, 0.5);
       //add bunny
       var spriteSheet = new createjs.SpriteSheet({
           framerate: 10
-          , "images": [loader.getResult("grant")]
+          , "images": [loader.getResult("bunny")]
           , "frames": {
-              "regX": 82
-              , "height": 370
-              , "count": 10
+              "height": 370
+              , "count": 15
               , "regY": 0
               , "width": 307
           }, // define two animations, run (loops, 1.5x speed) and jump (returns to run):
           "animations": {
               "run": [0, 1, "run", 1]
               , "jump": [2, 9, "run"]
+              , "hit": [10]
           }
       });
-      grant = new createjs.Sprite(spriteSheet, "run");
-      grant.x = 100;
-      grant.y = 25;
-      grant.scaleX = 0.8;
-      grant.scaleY = 0.8;
+      bunny = new createjs.Sprite(spriteSheet, "run");
+      bunny.x = 100;
+      bunny.y = 25;
+      bunny.scaleX = 0.8;
+      bunny.scaleY = 0.8;
       //add highest score
       hscore = new createjs.Text("HS: 0", "20px Arial", "#3c3c3c");
       hscore.x = w - 230;
@@ -107,16 +107,14 @@
       score.x = w - 150;
       score.y = 0;
       score.outline = true;
-      stage.addChild(sky, cloud, hill, hill2, ground, grant, carrot, rock, hscore, score);
-      //            stage.addEventListener("stagemousedown", spaceClicked);
+      stage.addChild(sky, cloud, hill, hill2, ground, bunny, carrot, rock, hscore, score);
       this.document.onkeydown = spaceClicked;
       createjs.Ticker.timingMode = createjs.Ticker.RAF;
       createjs.Ticker.addEventListener("tick", tick);
   }
 
   function handleJumpStart() {
-      grant.gotoAndPlay("jump");
-      //            console.log(Math.random());
+      bunny.gotoAndPlay("jump");
   }
 
   function tick(event) {
@@ -124,10 +122,8 @@
           return;
       }
       count++;
+      //check hit
       var deltaS = event.delta / 1000;
-      var position = grant.x + 150 * deltaS;
-      var grantW = grant.getBounds().width * grant.scaleX;
-      //            grant.x = (position >= w + grantW) ? -grantW : position;
       //move the ground
       ground.x = (ground.x - deltaS * groundSpeed) % ground.tileW;
       //move carrots and rocks
@@ -160,10 +156,24 @@
       if (count % 10 == 0) {
           score.text = "Score:  " + count / 5;
       }
+      //hit carrot
+      var pt = carrot.localToLocal(70, 60, bunny);
+      if (bunny.hitTest(pt.x, pt.y)) {
+          console.log(count);
+      }
+      //hit rock
+      pt = rock.localToLocal(50, 50, bunny);
+      if (bunny.hitTest(pt.x, pt.y)) {
+          gameOn = false;
+          handleBunnyHit();
+      }
       stage.update(event);
   }
 
-  function spaceClicked() {
+  function spaceClicked(event) {
+      if (event.keyCode !== 32) {
+          return;
+      }
       if (gameOn) {
           handleJumpStart();
       }
@@ -174,4 +184,14 @@
 
   function updateHS() {
       hscore.text = "HS: " + hs;
+  }
+
+  function handleBunnyHit() {
+      //      bunny.stop();
+      bunny.gotoAndStop("hit");
+      //      bunny.spriteSheet = null;
+      //      var hitBunny = new createjs.Bitmap(icon);
+      //      hitBunny.x = bunny.x;
+      //      hitBunny.y = bunny.y;
+      //      bunny = hitBunny;
   }
