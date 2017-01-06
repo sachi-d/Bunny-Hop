@@ -6,9 +6,8 @@
       , hillSpeed = 30
       , hill2Speed = 45
       , cloudSpeed = 15
-      , gameOn = false;
-  var rockMin = 500
-      , rockMax = 0;
+      , gameOn = false
+      , isHit = false;
 
   function init() {
       //            examples.showDistractor();
@@ -107,17 +106,23 @@
       //add highest score
       hscore = new createjs.Text("HS: 0", "20px Arial", "#3c3c3c");
       hscore.x = w - 230;
-      hscore.y = 0;
+      hscore.y = 10;
       hscore.outline = true;
       //add score text
       score = new createjs.Text("Score: 0", "20px Arial", "blue");
       score.x = w - 150;
-      score.y = 0;
+      score.y = 10;
       score.outline = true;
       stage.addChild(sky, cloud, hill, hill2, ground, bunny, carrot, points, rock, hscore, score);
       this.document.onkeydown = spaceClicked;
       createjs.Ticker.timingMode = createjs.Ticker.RAF;
       createjs.Ticker.addEventListener("tick", tick);
+  }
+
+  function startNewGame() {
+      console.log("ddddddd");
+      bunny.gotoAndStop("run");
+      gameOn = false, isHit = false, carrot.x += 300, rock.x += 700, count = 0, lastScore = 0, points.alpha = 0, points.x = carrot.x, score.text = "Score: 0";
   }
 
   function handleJumpStart() {
@@ -186,10 +191,18 @@
           return;
       }
       if (gameOn) {
+          //          else {
           handleJumpStart();
+          //          }
       }
       else {
-          gameOn = true;
+          if (isHit) {
+              startNewGame();
+          }
+          else {
+              gameOn = true;
+              bunny.play();
+          }
       }
   }
 
@@ -199,6 +212,7 @@
 
   function handleRockHit() {
       gameOn = false;
+      isHit = true;
       bunny.gotoAndStop("hit");
   }
 
@@ -208,6 +222,5 @@
           lastScore = count;
           points.x = carrot.x;
           points.alpha = 1;
-          console.log("ddd");
       }
   }
