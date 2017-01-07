@@ -22,11 +22,22 @@
                 <br />Jump over rocks to survive!
                 <br />Catch carrots for points!
                 <br>
-                <button id="fork-me" type="button" onclick="window.open('https://github.com/sachi-d/Bunny-Hop')">Fork me on Github</button>
+                <button class="my-btn" id="fork-me" type="button" onclick="window.open('https://github.com/sachi-d/Bunny-Hop')">Fork me on Github</button>
+                <button class="my-btn" id="fb-share" onclick="fbs_click()">Share highscore <img src="images/fb-share-btn.png" height="12" style="vertical-alignment:center;"></button>
             </p>
         </div>
         <canvas id="gameCanvas" width="900" height="400"></canvas>
     </div>
+    <script>
+        function fbs_click() {
+            u = "https://1.bp.blogspot.com/-N9Rw8xaoQjg/WG91q1CyCaI/AAAAAAAABNE/eZlN_QpEamkgF_UUv45HRb6tiDMpBxFcwCLcB/s1600/Screenshot_1.png";
+            // t=document.title;
+            t = "gggg";
+            var msg = "https://www.facebook.com/sharer.php?u=https://sachi-d.github.io/myApps/Bunny_Hop/&title=Bunny%20Hop%20-%20My%20highscore%20is%20";
+            window.open(msg + hscoreText + "!!", 'sharer', 'toolbar=0,status=0,width=626,height=436');
+            return false;
+        }
+    </script>
 </body>
 
 </html>

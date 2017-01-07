@@ -52,10 +52,17 @@ p {
     border: 2px solid black;
 }
 
-#fork-me {
-    background-color: #34B521;
+.my-btn {
     color: #fff;
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
+}
+
+#fork-me {
+    background-color: #34B521;
+}
+
+#fb-share {
+    background-color: #3B5898;
 }
